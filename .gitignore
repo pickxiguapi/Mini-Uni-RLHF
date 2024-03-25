@@ -2,6 +2,7 @@
 videos/
 data/
 dataset_resource/
+test/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
