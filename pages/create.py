@@ -232,10 +232,3 @@ with st.expander('🔍 Your input', expanded=True):
     })
 
     
-
-
-    
-    
-
-
-            

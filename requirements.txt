@@ -1,0 +1,12 @@
+streamlit
+st_pages
+streamlit_tags
+shortuuid
+tqdm
+setuptools==65.5.0
+pip==21
+wheel==0.38.0
+imageio
+opencv-python
+h5py
+imageio[ffmpeg]

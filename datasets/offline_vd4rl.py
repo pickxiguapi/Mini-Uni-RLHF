@@ -7,8 +7,6 @@ import shortuuid
 import argparse
 from tqdm import tqdm, trange
 import gym
-import d4rl
-import d4rl_atari
 import numpy as np
 import imageio
 import cv2
