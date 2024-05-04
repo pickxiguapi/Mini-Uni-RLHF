@@ -10,3 +10,5 @@ imageio
 opencv-python
 h5py
 imageio[ffmpeg]
+streamlit_img_label
+pascal_voc_writer

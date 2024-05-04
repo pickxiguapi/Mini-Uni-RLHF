@@ -148,30 +148,35 @@ with st.expander('🔍 Create Project', expanded=True):
         # qustion = {caption: option}
         caption = st.text_input(label="Please enter the question for the annotators:",
                                 value="Which of the two walker runs faster?")
-        option = streamlit_tags.st_tags(label='Enter options for the question:  (optional)',
-                            text='Press enter the options',
-                            value=['Left', 'Equal', 'Right'],
-                            maxtags=5)
-        question = {caption: option}
-        st.write("⬇️⬇️ If you want to add one more question, please press the button:")
         
-        if 'rows' not in st.session_state:
-            st.session_state['rows'] = 0
+        if feedback_type == 'visual' or feedback_type == 'keypoint':
+            question = [caption]
+        else:
+            option = streamlit_tags.st_tags(label='Enter options for the question:  (optional)',
+                                text='Press enter the options',
+                                value=['Left', 'Equal', 'Right'],
+                                maxtags=5)
+            question = {caption: option}
 
-        def add_more_questions():
-            st.session_state['rows'] += 1
-
-        def display_more_questions(index):
-            caption_temp = st.text_input(label="Please enter the question for the annotators:",
-                                    value="Which of the two walker more like human?",
-                                    key=f'caption_{index}')
-            option_temp = streamlit_tags.st_tags(label='Enter options for the question:  (optional)',
-                                            text='Press enter the options',
-                                            maxtags=5,
-                                            key=f'option_{index}')
-            question.update({caption_temp:option_temp})
+            st.write("⬇️⬇️ If you want to add one more question, please press the button:")
             
-        st.button('Add more question', on_click=add_more_questions)  # todo
+            if 'rows' not in st.session_state:
+                st.session_state['rows'] = 0
+
+            def add_more_questions():
+                st.session_state['rows'] += 1
+
+            def display_more_questions(index):
+                caption_temp = st.text_input(label="Please enter the question for the annotators:",
+                                        value="Which of the two walker more like human?",
+                                        key=f'caption_{index}')
+                option_temp = streamlit_tags.st_tags(label='Enter options for the question:  (optional)',
+                                                text='Press enter the options',
+                                                maxtags=5,
+                                                key=f'option_{index}')
+                question.update({caption_temp:option_temp})
+                
+            st.button('Add more question', on_click=add_more_questions)  # todo
         
         for i in range(st.session_state['rows']):
             display_more_questions(i)
