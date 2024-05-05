@@ -30,8 +30,6 @@ if 'feedback_type' not in st.session_state:
     st.session_state.feedback_type = ''
 if 'image_index' not in st.session_state:
     st.session_state.image_index = 0
-if 'disabled_save_btn' not in st.session_state:
-    st.session_state.disabled_save_btn = False 
 if 'rank_result_via_prompt' not in st.session_state:
     st.session_state.rank_result_via_prompt = []
 if 'rank_result_via_prompt_vis' not in st.session_state:
@@ -40,6 +38,8 @@ if 'rect_results' not in st.session_state:
     st.session_state.rect_results = []
 if 'image_list' not in st.session_state:
     st.session_state.image_list = []
+if 'annotation_files' not in st.session_state:  
+    st.session_state.annotation_files = []
 
 
 def get_all_project(data_dir):
@@ -84,7 +84,6 @@ def sort_by_number(filename):
     return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', filename)]
 
 def previous_image():
-    st.session_state["disabled_save_btn"] = True
     if st.session_state["image_index"] != 0:
         st.session_state["image_index"] = (st.session_state["image_index"]-1) % st.session_state['query_length'] 
     else:
@@ -93,13 +92,12 @@ def previous_image():
 
 
 def next_image():
-    st.session_state["disabled_save_btn"] = True
     st.session_state["image_index"] = (st.session_state["image_index"]+1) % st.session_state['query_length']   
 
 
 def next_annotate_file(idm):
     image_index = st.session_state["image_index"]
-    st.session_state["disabled_save_btn"] = True
+    print(image_index)
     next_image_index = idm.get_next_annotation_image(image_index)
     if next_image_index:
         st.session_state["image_index"] = idm.get_next_annotation_image(image_index)
@@ -111,7 +109,6 @@ def next_annotate_file(idm):
 def go_to_image():
     file_index = st.session_state["files"].index(st.session_state["file"])
     st.session_state["image_index"] = file_index
-    st.session_state["disabled_save_btn"] = True
     
 
 def annotate(rects, idm, im, img_file_name):
@@ -120,19 +117,19 @@ def annotate(rects, idm, im, img_file_name):
         ymin = box["top"]
         xmax = box["left"] + box["width"]
         ymax = box["top"] + box["height"]
-        rank_result_via_prompt = st.session_state['rank_result_via_prompt_vis']
-        if st.session_state["image_index"] not in rank_result_via_prompt:
-            rank_result_via_prompt = [st.session_state["image_index"]] = [(xmin, ymin, xmax, ymax)]
+        rank_result_via_prompt_vis = st.session_state['rank_result_via_prompt_vis']
+        if st.session_state["image_index"] not in rank_result_via_prompt_vis:
+            rank_result_via_prompt_vis = [(xmin, ymin, xmax, ymax)]
         else:
-            rank_result_via_prompt[st.session_state["image_index"]].append((xmin, ymin, xmax, ymax))
+            rank_result_via_prompt_vis[st.session_state["image_index"]].append((xmin, ymin, xmax, ymax))
 
-    st.session_state['rank_result_via_prompt_vis'] = rank_result_via_prompt
+    st.session_state['rank_result_via_prompt_vis'] = rank_result_via_prompt_vis
     im.save_annotation()
     image_annotate_file_name = img_file_name.split(".")[0] + ".xml"
     if image_annotate_file_name not in st.session_state["annotation_files"]:
         st.session_state["annotation_files"].append(image_annotate_file_name)
     next_annotate_file(idm)
-    st.session_state["disabled_save_btn"] = True 
+    
 
 def keyframe(stchoose):
     index = st.session_state['rank_result_via_prompt'] 
@@ -240,7 +237,9 @@ else:
             df.loc[df['query_id'] == query_id, ['label', 'annotated']] = [','.join(label), 1]
             df.to_csv(csv_dir, index=False)
             st.session_state.label = []
+            st.session_state["annotation_files"] = []
             st.session_state["rank_result_via_prompt"] = []
+            st.session_state["rank_result_via_prompt_vis"] = {}
             # next
             
             if int(st.session_state.index) == query_num-1:
@@ -343,11 +342,13 @@ else:
     
 
     elif st.session_state.feedback_type == 'visual':
+        rects = []
+        if 'rerun_flag' not in st.session_state:
+            st.session_state.rerun_flag = 1
         file_path = str(st.session_state.query_info[st.session_state.index][1]).replace(".mp4", "_img").replace("\\", "/")
         im_list = load_images(file_path)
         st.set_option("deprecation.showfileUploaderEncoding", False)
         idm = ImageDirManager(file_path)
-        st.session_state.disabled_save_btn = True
         if "files" not in st.session_state:
             st.session_state["files"] = idm.get_all_files()
             st.session_state["files"] = sorted(st.session_state["files"], key=sort_by_number)
@@ -372,8 +373,6 @@ else:
             # Main content: annotate images
             img_file_name = idm.get_image(st.session_state["image_index"])
             image_annotate_file_name = img_file_name.split(".")[0] + ".xml"
-            if image_annotate_file_name in st.session_state["annotation_files"]:
-                st.session_state["disabled_save_btn"] = True
             img_path = os.path.join(file_path, img_file_name)
             im = load_image_manager(img_path)#ImageManager(img_path)
             img = im.get_img()
@@ -394,7 +393,7 @@ else:
         # with col4:
         #     st.button(label="Next need annotate", on_click=next_annotate_file)
         with col5:
-            st.button(label="Save", disabled=st.session_state["disabled_save_btn"], on_click=annotate, args=(rects, idm, im, img_file_name))
+            st.button(label="Save", on_click=annotate, args=(rects, idm, im, img_file_name))
             
         
 
@@ -407,12 +406,15 @@ else:
             
         
         if rects:
-            st.session_state["disabled_save_btn"] = False
             preview_imgs = im.init_annotation(rects)
             for i, prev_img in enumerate(preview_imgs):
                 im.set_annotation(i, "default")
                 
         with st.expander('💡 Question', expanded=True):
             st.write(st.session_state.project_info["question"][0])
-            st.session_state.label = str(st.session_state["rank_result_via_prompt"])
+            st.session_state.label = str(st.session_state["rank_result_via_prompt_vis"])
             st.button('Submit', on_click=save_and_next)
+        
+        if st.session_state["rerun_flag"] == 1:
+            st.session_state["rerun_flag"] += 1
+            st.experimental_rerun()

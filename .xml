@@ -1,0 +1,26 @@
+<annotation>
+    <folder>walker_walk_medium_21ed890b92d247f1b327b3a9a68537d1_img</folder>
+    <filename>1.jpg</filename>
+    <path>D:\mini-uni-rlhf\videos\LPDNqh6ZfNzrsUmZQEssja\walker_walk_medium_21ed890b92d247f1b327b3a9a68537d1_img\1.jpg</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>112</width>
+        <height>112</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <name>default</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>49</xmin>
+            <ymin>49</ymin>
+            <xmax>72</xmax>
+            <ymax>72</ymax>
+        </bndbox>
+    </object>
+</annotation>
