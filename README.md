@@ -26,6 +26,13 @@ Install dependencies in **less than 30 seconds**:
 cd /path/to/Mini-Uni-RLHF
 pip install -r requirements.txt
 ```
+Using test datasets:  
+- Download datasets in [Google Drive](https://drive.google.com/file/d/1ysBaB-BsgGLTDK3YNgGQqldeBs7jVbCl/view?usp=sharing)   
+- Move `0_walker_walk_medium.hdf5` to default dataset location:  
+```bash
+cd /path/to/Mini-Uni-RLHF
+mkdir -p datasets/dataset_resource/vd4rl/walker/walker_walk_medium/
+```
 
 😎 Enjoy the mini tool!
 ```bash
@@ -36,7 +43,7 @@ streamlit run main.py
 
 ### How to use existed datasets
 
-We provide a very small walker dataset in `Mini-Uni-RLHF/datasets/dataset_resource/vd4rl/walker/walker_walk_medium/half_walker_walk_medium.hdf5` for users to test. And now we suppoert `d4rl`, `atari`, `smarts` and `vd4rl` domain. (TODO)
+We provide a very small walker dataset in `Mini-Uni-RLHF/datasets/dataset_resource/vd4rl/walker/walker_walk_medium/0_walker_walk_medium.hdf5` for users to test. And now we suppoert `d4rl`, `atari`, `smarts` and `vd4rl` domain. (TODO)
 
 ### How to add new datasets
 
